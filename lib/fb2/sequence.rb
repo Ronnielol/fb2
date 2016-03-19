@@ -1,6 +1,7 @@
 module Fb2
   class Sequence < Type
-    attribute :name#" type="pType" maxOccurs="unbounded">
-    attribute :number#" type="pType" maxOccurs="unbounded">
+    attribute :name, String
+    attribute :number, Integer
+    attribute :lang, String
   end
 end

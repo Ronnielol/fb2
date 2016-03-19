@@ -23,6 +23,7 @@ module Fb2
       state :empty_line
       state :poem
       state :title
+      state :subtitle
       state :epigraph
       state :stanza
       state :v
@@ -54,6 +55,10 @@ module Fb2
       state :section
       state :style
       state :binary
+      state :table
+      state :tr
+      state :th
+      state :td
 
       event :start_fiction_book do
         transitions from: :root, to: :fiction_book
@@ -184,6 +189,7 @@ module Fb2
       event :start_p do
         transitions from: :annotation, to: :p
         transitions from: :title, to: :p
+        transitions from: :subtitle, to: :p
         transitions from: :epigraph, to: :p
         transitions from: :cite, to: :p
         transitions from: :history, to: :p
@@ -193,6 +199,7 @@ module Fb2
       event :end_p do
         transitions from: :p, to: :annotation, guard: :in_annotation?
         transitions from: :p, to: :title, guard: :in_title?
+        transitions from: :p, to: :subtitle, guard: :in_subtitle?
         transitions from: :p, to: :epigraph, guard: :in_epigraph?
         transitions from: :p, to: :cite, guard: :in_cite?
         transitions from: :p, to: :history, guard: :in_history?
@@ -202,11 +209,15 @@ module Fb2
       event :start_empty_line do
         transitions from: :annotation, to: :empty_line
         transitions from: :epigraph, to: :empty_line
+        transitions from: :title, to: :empty_line
+        transitions from: :subtitle, to: :empty_line
       end
 
       event :end_empty_line do
         transitions from: :empty_line, to: :annotation, guard: :in_annotation?
         transitions from: :empty_line, to: :epigraph, guard: :in_epigraph?
+        transitions from: :empty_line, to: :title, guard: :in_title?
+        transitions from: :empty_line, to: :subtitle, guard: :in_subtitle?
       end
 
       event :start_poem do
@@ -229,6 +240,18 @@ module Fb2
         transitions from: :title, to: :poem, guard: :in_poem?
         transitions from: :title, to: :body, guard: :in_body?
         transitions from: :title, to: :section, guard: :in_section?
+      end
+
+      event :start_subtitle do
+        transitions from: :poem, to: :subtitle
+        transitions from: :body, to: :subtitle
+        transitions from: :section, to: :subtitle
+      end
+
+      event :end_subtitle do
+        transitions from: :subtitle, to: :poem, guard: :in_poem?
+        transitions from: :subtitle, to: :body, guard: :in_body?
+        transitions from: :subtitle, to: :section, guard: :in_section?
       end
 
       event :start_epigraph do
@@ -495,6 +518,40 @@ module Fb2
       event :end_binary do
         transitions from: :binary, to: :fiction_book
       end
+
+      event :start_table do
+        transitions from: :section, to: :table
+        transitions from: :paragraph, to: :table
+      end
+
+      event :end_table do
+        transitions from: :table, to: :section, guard: :in_section?
+        transitions from: :table, to: :paragraph, guard: :in_paragraph
+      end
+
+      event :start_tr do
+        transitions from: :table, to: :tr
+      end
+
+      event :end_tr do
+        transitions from: :tr, to: :table
+      end
+
+      event :start_th do
+        transitions from: :tr, to: :th
+      end
+
+      event :end_th do
+        transitions from: :th, to: :tr
+      end
+
+      event :start_td do
+        transitions from: :tr, to: :td
+      end
+
+      event :end_td do
+        transitions from: :td, to: :tr
+      end
     end
 
     aasm.states.map(&:name).each do |state_name|
@@ -526,11 +583,7 @@ module Fb2
         self.current_element = Genre.new
       when "author", "translator"
         self.current_element = Author.new
-      when "first_name", "middle_name", "last_name", "nickname", "home_page", "email"
-        #
-      when "book_title", "book_name"
-        #
-      when "annotation"
+      when "annotation", "history"
         self.current_element = Annotation.new
       when "p"
         self.current_element = Paragraph.new
@@ -540,6 +593,8 @@ module Fb2
         self.current_element = Poem.new
       when "title"
         self.current_element = Title.new
+      when "subtitle"
+        self.current_element = Title.new
       when "epigraph"
         self.current_element = Epigraph.new
       when "stanza"
@@ -548,8 +603,8 @@ module Fb2
         self.current_element = Verse.new
       when "cite"
         self.current_element = Cite.new
-      when "text_author", "keywords"
-        #
+      when "text_author"
+        self.current_element = TextAuthor.new
       when "a"
         self.current_element = Anchor.new
       when "date"
@@ -564,14 +619,8 @@ module Fb2
         self.current_element = Sequence.new
       when "document_info"
         self.current_element = DocumentInfo.new
-      when "program_used", "src_url", "src_ocr", "id", "version"
-        #
-      when "history"
-        self.current_element = History.new
       when "publish_info"
         self.current_element = PublishInfo.new
-      when "publisher", "city", "year", "isbn"
-        #
       when "custom_info"
         self.current_element = CustomInfo.new
       when "body"
@@ -582,12 +631,30 @@ module Fb2
         self.current_element = Style.new
       when "binary"
         self.current_element = Binary.new
+      when "first_name", "middle_name", "last_name", "nickname", "home_page", "email"
+        #
+      when "book_title", "book_name"
+        #
+      when "keywords"
+        #
+      when "program_used", "src_url", "src_ocr", "id", "version"
+        #
+      when "publisher", "city", "year", "isbn"
+        #
+      when "table"
+        self.current_element = Table.new
+      when "tr"
+        self.current_element = Table::Row.new
+      when "th"
+        self.current_element = Table::Header.new
+      when "td"
+        self.current_element = Table::Column.new
       else
         fail "undefined element #{ name }"
       end
 
       path.push uname
-      send "start_#{ uname }", name
+      send "start_#{ uname }", name rescue binding.pry
     end
 
     def end_element(name)
@@ -598,67 +665,66 @@ module Fb2
       when "fiction_book"
         #
       when "stylesheet"
-        stack.pop
+        @consumer.call stack.pop
       when "description"
-        stack.pop
+        @consumer.call stack.pop
+      when "body"
+        @consumer.call stack.pop
+      when "binary"
+        @consumer.call stack.pop
       when "title_info"
+        self.parent_element.title_info = self.current_element
+        stack.pop
+      when "document_info"
+        self.parent_element.document_info = self.current_element
+        stack.pop
+      when "custom_info"
+        self.parent_element.custom_info = self.current_element
+        stack.pop
+      when "publish_info"
+        self.parent_element.publish_info = self.current_element
         stack.pop
       when "genre"
         self.parent_element.genres << self.current_element
         stack.pop
-      when "author", "translator"
+      when "author"
+        self.parent_element.author = self.current_element
         stack.pop
+      when "translator"
+        self.parent_element.translator = self.current_element
+        stack.pop
+      when "annotation"
+        self.parent_element.annotation = self.current_element
+        stack.pop
+      when "coverpage"
+        self.parent_element.coverpage = self.current_element
+        stack.pop
+      when "title", "subtitle", "epigraph", "p", "stanza", "empty_line", "poem", "v", "a", "image", "text_author", "cite", "style", "section", "table", "th", "td", "tr"
+        self.parent_element.text << self.current_element
+        stack.pop
+      when "date"
+        self.parent_element.date = self.current_element
+        stack.pop
+      when "sequence"
+        self.parent_element.sequence = self.current_element
+        stack.pop
+      when "history"
+        self.parent_element.history = self.current_element
+        stack.pop
+      when "lang"
+        self.parent_element.lang = self.current_element
+        stack.pop
+      when "src_lang"
+        self.parent_element.src_lang = self.current_element
+        stack.pop
+      when "id", "version", "program_used", "src_url", "src_ocr"
+        #
+      when "publisher", "city", "year", "isbn", "keywords"
+        #
       when "first_name", "middle_name", "last_name", "nickname", "home_page", "email"
         #
       when "book_title", "book_name"
         #
-      when "annotation"
-        stack.pop
-      when "p", "empty_line", "poem", "v", "a"
-        self.parent_element.text << self.current_element
-        stack.pop
-      when "title"
-        stack.pop
-      when "epigraph"
-        stack.pop
-      when "stanza"
-        stack.pop
-      when "cite"
-        stack.pop
-      when "text_author"
-        # stack.pop
-      when "keywords"
-        # stack.pop
-      when "date"
-        stack.pop
-      when "coverpage"
-        stack.pop
-      when "image"
-        stack.pop
-      when "lang", "src_lang"
-        stack.pop
-      when "sequence"
-        stack.pop
-      when "document_info"
-        stack.pop
-      when "program_used", "src_url", "src_ocr", "id", "version"
-        #
-      when "history"
-        stack.pop
-      when "publish_info"
-        stack.pop
-      when "publisher", "city", "year", "isbn"
-        #
-      when "custom_info"
-        stack.pop
-      when "body"
-        stack.pop
-      when "section"
-        stack.pop
-      when "style"
-        stack.pop
-      when "binary"
-        stack.pop
       end
 
       send "end_#{ uname }", uname unless path[-1] == path[-2] # for section -> section / paragraph -> paragrap
@@ -672,15 +738,16 @@ module Fb2
 
     def text(value)
       debug "  text : #{ value }"
+      return if value.strip.empty?
 
-      if current_element.respond_to? :value=
+      if current_element.respond_to? :text
+        current_element.text << Text.new(value: value)
+      elsif current_element.respond_to? :value=
         current_element.value = value
-      elsif current_element.respond_to? :text
-        current_element.text << TextNode.new(value: value)
       elsif current_element.respond_to? "#{ path.last }="
         current_element.send "#{ path.last }=", value
       else
-        fail "undefined behavior for #{ current_element.class.name }.#{ path.last } : #{ value }"
+        fail "undefined behavior for #{ current_element.class.name }##{ path.last } : #{ value }"
       end
     end
 

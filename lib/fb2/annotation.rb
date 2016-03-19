@@ -1,8 +1,7 @@
 module Fb2
   class Annotation < Type
     attribute :id, String
-    attribute :text_author, String
-    attribute :text, Array[TextNode]
-    # lang
+    attribute :lang, String
+    attribute :text, Array[Text]
   end
 end

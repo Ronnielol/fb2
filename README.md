@@ -1,8 +1,6 @@
 # Fb2
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/fb2`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+FictionBook parser.
 
 ## Installation
 
@@ -22,7 +20,20 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```
+require 'open-uri'
+
+file = open("https://raw.githubusercontent.com/localhots/fb2/master/test/fixtures/sample.fb2")
+
+Fb2::Book.new(file).elements
+# => #<Enumerator::Lazy: #<Enumerator: #<Enumerator::Generator:0x007fa3ebb0b5f8>:each>>
+
+Fb2::Book.new(file).body
+# => #<Enumerator::Lazy: #<Enumerator::Lazy: #<Enumerator: #<Enumerator::Generator:0x007fa3edc5f420>:each>>:select>
+
+Fb2::Book.new(file).description
+# =>  #<Fb2::Description:0x007fa3edc452c8 @title ... >
+```
 
 ## Development
 

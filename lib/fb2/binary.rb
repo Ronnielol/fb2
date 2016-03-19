@@ -1,7 +1,7 @@
 module Fb2
   class Binary < Type
-    attribute :content_type, String# type="xs:string" use="required"/>
-    attribute :id, String# use="required"/>
+    attribute :id, String
+    attribute :content_type, String
     attribute :value, String
   end
 end

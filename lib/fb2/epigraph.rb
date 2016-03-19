@@ -1,7 +1,6 @@
 module Fb2
   class Epigraph < Type
     attribute :id, String
-    attribute :text_author, String
-    attribute :text, Array[TextNode]
+    attribute :text, Array[Text]
   end
 end

@@ -1,5 +1,5 @@
 module Fb2
-  class Coverpage < Type
+  class TextAuthor < Type
     attribute :text, Array[Text]
   end
 end

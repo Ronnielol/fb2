@@ -1,5 +1,4 @@
 module Fb2
-  class Verse < Type
-    attribute :value, String
+  class Verse < Paragraph
   end
 end

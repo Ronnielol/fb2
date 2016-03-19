@@ -9,14 +9,13 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Andrey Zinenko"]
   spec.email         = ["andrew@izinenko.ru"]
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.summary       = "fb2 sax parser"
+  spec.description   = "FictionBook parser"
+  spec.homepage      = "https://github.com/zinenko/fb2"
+  spec.license       = "MIT"
 
-  # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
-  # delete this section to allow pushing this gem to any host.
   if spec.respond_to?(:metadata)
-    spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
+    spec.metadata['allowed_push_host'] = "https://rubygems.org"
   else
     raise "RubyGems 2.0 or newer is required to protect against public gem pushes."
   end
@@ -26,11 +25,12 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency "ox"
-  spec.add_runtime_dependency "aasm"
-  spec.add_runtime_dependency "virtus"
+  spec.add_runtime_dependency "ox",     ">= 2.0"
+  spec.add_runtime_dependency "aasm",   ">= 4.0"
+  spec.add_runtime_dependency "virtus", ">= 1.0"
+
   spec.add_development_dependency "bundler", "~> 1.11"
-  spec.add_development_dependency "pry"
-  spec.add_development_dependency "rake", "~> 10.0"
-  spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency "pry",     ">= 0.10"
+  spec.add_development_dependency "rake",    ">= 10.0"
+  spec.add_development_dependency "rspec",   ">= 3.0"
 end

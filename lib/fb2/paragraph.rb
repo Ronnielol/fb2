@@ -3,6 +3,6 @@ module Fb2
     attribute :id, String
     attribute :style, String
     attribute :lang, String
-    attribute :text, Array[TextNode]
+    attribute :text, Array[Text]
   end
 end
