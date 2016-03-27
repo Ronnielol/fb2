@@ -1,26 +1,19 @@
 # Fb2
 
-FictionBook parser.
+[FictionBook](https://en.wikipedia.org/wiki/FictionBook) parser.
+
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-```ruby
+```.bash
 gem 'fb2'
 ```
 
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install fb2
-
 ## Usage
 
-```
+```.ruby
 require 'open-uri'
 
 file = open("https://raw.githubusercontent.com/localhots/fb2/master/test/fixtures/sample.fb2")
