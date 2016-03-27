@@ -10,12 +10,6 @@ describe Fb2::Book do
     it { expect{ book.elements.to_a }.to_not raise_error }
   end
 
-  describe "#stylesheet" do
-    it { expect(book.stylesheet).to be_a(Fb2::Stylesheet) }
-    it { expect(book.stylesheet.type).to eq('text/css') }
-    it { expect(book.stylesheet.value).to eq("\n\t\t.body{font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;}\n\t\t.p{margin:0.5em 0 0 0.3em; padding:0.2em; text-align:justify;}\n\t") }
-  end
-
   specify "#binaries" do
     expect(book.binaries).to be_a(Enumerator)
     expect(book.binaries.count).to eq(2)
