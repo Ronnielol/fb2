@@ -1,4 +1,4 @@
-# Fb2
+# Fb2 [![Build Status](https://travis-ci.org/zinenko/fb2.svg?branch=master)](https://travis-ci.org/zinenko/fb2)
 
 [FictionBook](https://en.wikipedia.org/wiki/FictionBook) parser / reader.
 
