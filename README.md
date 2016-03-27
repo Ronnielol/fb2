@@ -1,6 +1,6 @@
 # Fb2
 
-[FictionBook](https://en.wikipedia.org/wiki/FictionBook) parser.
+[FictionBook](https://en.wikipedia.org/wiki/FictionBook) parser / reader.
 
 
 ## Installation
@@ -36,5 +36,5 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/fb2.
+Bug reports and pull requests are welcome on GitHub at https://github.com/zinenko/fb2.
 
