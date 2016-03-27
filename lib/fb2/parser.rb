@@ -654,7 +654,7 @@ module Fb2
       end
 
       path.push uname
-      send "start_#{ uname }", name rescue binding.pry
+      send "start_#{ uname }", name
     end
 
     def end_element(name)
