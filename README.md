@@ -15,6 +15,8 @@ gem 'fb2'
 
 ## Usage
 
+### In Ruby
+
 ```.ruby
 require 'open-uri'
 
@@ -65,6 +67,17 @@ Fb2::Book.new(file).bodies.first.text.map(&:class)
 # get all binay files
 Fb2::Book.new(file).binaries
 # => #<Enumerator::Lazy: #<Enumerator::Lazy: #<Enumerator: ... >
+```
+
+#### In console
+
+```
+fb2binary -f 'tolstoy_port.png' spec/support/example.fb2 > test.png
+
+ls -al  | grep test.png
+-rw-r--r--   1 username  group  17281 Mar 31 22:02 test.png
+
+open test.png # open file in image viewer
 ```
 
 ## Development
