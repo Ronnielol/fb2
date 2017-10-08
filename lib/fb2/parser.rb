@@ -555,7 +555,7 @@ module Fb2
     end
 
     aasm.states.map(&:name).each do |state_name|
-      define_method "in_#{ state_name }?" do
+      define_method "in_#{state_name}?" do
         path[-2] == state_name.to_s
       end
     end
@@ -566,188 +566,188 @@ module Fb2
     end
 
     def start_element(name)
-      debug "> #{ name }"
+      debug "> #{name}"
 
       uname = normalize(name)
 
       case uname
-      when "fiction_book"
+      when 'fiction_book'
         #
-      when "stylesheet"
+      when 'stylesheet'
         self.current_element = Stylesheet.new
-      when "description"
+      when 'description'
         self.current_element = Description.new
-      when "title_info"
+      when 'title_info'
         self.current_element = TitleInfo.new
-      when "genre"
+      when 'genre'
         self.current_element = Genre.new
-      when "author", "translator"
+      when 'author', 'translator'
         self.current_element = Author.new
-      when "annotation", "history"
+      when 'annotation', 'history'
         self.current_element = Annotation.new
-      when "p"
+      when 'p'
         self.current_element = Paragraph.new
-      when "empty_line"
+      when 'empty_line'
         self.current_element = EmptyLine.new
-      when "poem"
+      when 'poem'
         self.current_element = Poem.new
-      when "title"
+      when 'title'
         self.current_element = Title.new
-      when "subtitle"
+      when 'subtitle'
         self.current_element = Title.new
-      when "epigraph"
+      when 'epigraph'
         self.current_element = Epigraph.new
-      when "stanza"
+      when 'stanza'
         self.current_element = Stanza.new
-      when "v"
+      when 'v'
         self.current_element = Verse.new
-      when "cite"
+      when 'cite'
         self.current_element = Cite.new
-      when "text_author"
+      when 'text_author'
         self.current_element = TextAuthor.new
-      when "a"
+      when 'a'
         self.current_element = Anchor.new
-      when "date"
+      when 'date'
         self.current_element = Date.new
-      when "coverpage"
+      when 'coverpage'
         self.current_element = Coverpage.new
-      when "image"
+      when 'image'
         self.current_element = Image.new
-      when "lang", "src_lang"
+      when 'lang', 'src_lang'
         self.current_element = Lang.new
-      when "sequence"
+      when 'sequence'
         self.current_element = Sequence.new
-      when "document_info"
+      when 'document_info'
         self.current_element = DocumentInfo.new
-      when "publish_info"
+      when 'publish_info'
         self.current_element = PublishInfo.new
-      when "custom_info"
+      when 'custom_info'
         self.current_element = CustomInfo.new
-      when "body"
+      when 'body'
         self.current_element = Body.new
-      when "section"
+      when 'section'
         self.current_element = Section.new
-      when "style"
+      when 'style'
         self.current_element = Style.new
-      when "binary"
+      when 'binary'
         self.current_element = Binary.new
-      when "first_name", "middle_name", "last_name", "nickname", "home_page", "email"
+      when 'first_name', 'middle_name', 'last_name', 'nickname', 'home_page', 'email'
         #
-      when "book_title", "book_name"
+      when 'book_title', 'book_name'
         #
-      when "keywords"
+      when 'keywords'
         #
-      when "program_used", "src_url", "src_ocr", "id", "version"
+      when 'program_used', 'src_url', 'src_ocr', 'id', 'version'
         #
-      when "publisher", "city", "year", "isbn"
+      when 'publisher', 'city', 'year', 'isbn'
         #
-      when "table"
+      when 'table'
         self.current_element = Table.new
-      when "tr"
+      when 'tr'
         self.current_element = Table::Row.new
-      when "th"
+      when 'th'
         self.current_element = Table::Header.new
-      when "td"
+      when 'td'
         self.current_element = Table::Column.new
       else
-        fail "undefined element #{ name }"
+        fail "undefined element #{name}"
       end
 
       path.push uname
-      send "start_#{ uname }", name
+      send "start_#{uname}", name
     end
 
     def end_element(name)
-      debug "< #{ name }"
+      debug "< #{name}"
       uname = normalize(name)
 
       case uname
-      when "fiction_book"
+      when 'fiction_book'
         #
-      when "stylesheet"
+      when 'stylesheet'
         @consumer.call stack.pop
-      when "description"
+      when 'description'
         @consumer.call stack.pop
-      when "body"
+      when 'body'
         @consumer.call stack.pop
-      when "binary"
+      when 'binary'
         @consumer.call stack.pop
-      when "title_info"
-        self.parent_element.title_info = self.current_element
+      when 'title_info'
+        parent_element.title_info = current_element
         stack.pop
-      when "document_info"
-        self.parent_element.document_info = self.current_element
+      when 'document_info'
+        parent_element.document_info = current_element
         stack.pop
-      when "custom_info"
-        self.parent_element.custom_info = self.current_element
+      when 'custom_info'
+        parent_element.custom_info = current_element
         stack.pop
-      when "publish_info"
-        self.parent_element.publish_info = self.current_element
+      when 'publish_info'
+        parent_element.publish_info = current_element
         stack.pop
-      when "genre"
-        self.parent_element.genres << self.current_element
+      when 'genre'
+        parent_element.genres << current_element
         stack.pop
-      when "author"
-        self.parent_element.author = self.current_element
+      when 'author'
+        parent_element.author = current_element
         stack.pop
-      when "translator"
-        self.parent_element.translator = self.current_element
+      when 'translator'
+        parent_element.translator = current_element
         stack.pop
-      when "annotation"
-        self.parent_element.annotation = self.current_element
+      when 'annotation'
+        parent_element.annotation = current_element
         stack.pop
-      when "coverpage"
-        self.parent_element.coverpage = self.current_element
+      when 'coverpage'
+        parent_element.coverpage = current_element
         stack.pop
-      when "title", "subtitle", "epigraph", "p", "stanza", "empty_line", "poem", "v", "a", "image", "text_author", "cite", "style", "section", "table", "th", "td", "tr"
-        self.parent_element.text << self.current_element
+      when 'title', 'subtitle', 'epigraph', 'p', 'stanza', 'empty_line', 'poem', 'v', 'a', 'image', 'text_author', 'cite', 'style', 'section', 'table', 'th', 'td', 'tr'
+        parent_element.text << current_element
         stack.pop
-      when "date"
-        self.parent_element.date = self.current_element
+      when 'date'
+        parent_element.date = current_element
         stack.pop
-      when "sequence"
-        self.parent_element.sequence = self.current_element
+      when 'sequence'
+        parent_element.sequence = current_element
         stack.pop
-      when "history"
-        self.parent_element.history = self.current_element
+      when 'history'
+        parent_element.history = current_element
         stack.pop
-      when "lang"
-        self.parent_element.lang = self.current_element
+      when 'lang'
+        parent_element.lang = current_element
         stack.pop
-      when "src_lang"
-        self.parent_element.src_lang = self.current_element
+      when 'src_lang'
+        parent_element.src_lang = current_element
         stack.pop
-      when "id", "version", "program_used", "src_url", "src_ocr"
+      when 'id', 'version', 'program_used', 'src_url', 'src_ocr'
         #
-      when "publisher", "city", "year", "isbn", "keywords"
+      when 'publisher', 'city', 'year', 'isbn', 'keywords'
         #
-      when "first_name", "middle_name", "last_name", "nickname", "home_page", "email"
+      when 'first_name', 'middle_name', 'last_name', 'nickname', 'home_page', 'email'
         #
-      when "book_title", "book_name"
+      when 'book_title', 'book_name'
         #
       end
 
-      send "end_#{ uname }", uname unless path[-1] == path[-2] # for section -> section / paragraph -> paragrap
+      send "end_#{uname}", uname unless path[-1] == path[-2] # for section -> section / paragraph -> paragrap
       path.pop
     end
 
     def attr(name, value)
-      debug " #{ name } : #{ value }"
+      debug " #{name} : #{value}"
       current_element[normalize name] = value if current_element
     end
 
     def text(value)
-      debug "  text : #{ value }"
+      debug "  text : #{value}"
       return if value.strip.empty?
 
       if current_element.respond_to? :text
         current_element.text << Text.new(value: value)
       elsif current_element.respond_to? :value=
         current_element.value = value
-      elsif current_element.respond_to? "#{ path.last }="
-        current_element.send "#{ path.last }=", value
+      elsif current_element.respond_to? "#{path.last}="
+        current_element.send "#{path.last}=", value
       else
-        fail "undefined behavior for #{ current_element.class.name }##{ path.last } : #{ value }"
+        fail "undefined behavior for #{current_element.class.name}##{path.last} : #{value}"
       end
     end
 
@@ -774,15 +774,15 @@ module Fb2
     end
 
     def debug(message)
-      @logger.debug (" " * path.size) << message
+      @logger.debug((' ' * path.size) << message)
     end
 
     def normalize(string)
-      s = string.to_s.split(":").last
+      s = string.to_s.split(':').last
       s.gsub!(/::/, '/')
-      s.gsub!(/([A-Z]+)([A-Z][a-z])/,'\1_\2')
-      s.gsub!(/([a-z\d])([A-Z])/,'\1_\2')
-      s.tr!("-", "_")
+      s.gsub!(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
+      s.gsub!(/([a-z\d])([A-Z])/, '\1_\2')
+      s.tr!('-', '_')
       s.downcase
     end
   end

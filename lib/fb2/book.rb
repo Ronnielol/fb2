@@ -3,7 +3,7 @@ module Fb2
     def initialize(io, logger = nil)
       @io = io
       @logger = logger || Logger.new(STDOUT)
-      @logger.level = ENV["DEBUG"] ? Logger::DEBUG : Logger::INFO
+      @logger.level = ENV['DEBUG'] ? Logger::DEBUG : Logger::INFO
     end
 
     def elements

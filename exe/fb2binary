@@ -2,7 +2,7 @@
 
 require 'rubygems'
 
-$:.unshift File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
 require 'fb2'
 require 'optparse'
@@ -11,22 +11,22 @@ require 'base64'
 
 options = {}
 
-OptionParser.new { |opts|
-  opts.banner = "Usage: fb2binary [options] file name"
+OptionParser.new do |opts|
+  opts.banner = 'Usage: fb2binary [options] file name'
 
-  opts.on("--file [file]", "-f [file]", "file") do |file|
+  opts.on('--file [file]', '-f [file]', 'file') do |file|
     options[:file] = file
   end
 
-  opts.on_tail("-v", "--version", "Show version") do
+  opts.on_tail('-v', '--version', 'Show version') do
     puts Fb2::VERSION
     exit
   end
-}.parse!
+end.parse!
 
-fail "Missing file name" if ARGV.empty?
+fail 'Missing file name' if ARGV.empty?
 
-file = Fb2::Book.new(open(ARGV.first)).binaries.detect { |file| file.id == options[:file] }
+file = Fb2::Book.new(open(ARGV.first)).binaries.detect { |f| f.id == options[:file] }
 
 fail "Missing file #{options[:file]} in book" unless file
 
