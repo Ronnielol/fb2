@@ -20,6 +20,8 @@ module Fb2
       state :book_name
       state :annotation
       state :p
+      state :strong
+      state :emphasis
       state :empty_line
       state :poem
       state :title
@@ -206,11 +208,62 @@ module Fb2
         transitions from: :p, to: :section, guard: :in_section?
       end
 
+      event :start_strong do
+        transitions from: :p, to: :strong
+        transitions from: :annotation, to: :strong
+        transitions from: :title, to: :strong
+        transitions from: :subtitle, to: :strong
+        transitions from: :epigraph, to: :strong
+        transitions from: :cite, to: :strong
+        transitions from: :history, to: :strong
+        transitions from: :section, to: :strong
+        transitions from: :emphasis, to: :strong
+      end
+
+      event :end_strong do
+        transitions from: :strong, to: :emphasis, guard: :in_emphasis?
+        transitions from: :strong, to: :p, guard: :in_p?
+        transitions from: :strong, to: :annotation, guard: :in_annotation?
+        transitions from: :strong, to: :title, guard: :in_title?
+        transitions from: :strong, to: :subtitle, guard: :in_subtitle?
+        transitions from: :strong, to: :epigraph, guard: :in_epigraph?
+        transitions from: :strong, to: :cite, guard: :in_cite?
+        transitions from: :strong, to: :history, guard: :in_history?
+        transitions from: :strong, to: :section, guard: :in_section?
+      end
+
+      event :start_emphasis do
+        transitions from: :p, to: :emphasis
+        transitions from: :v, to: :emphasis
+        transitions from: :annotation, to: :emphasis
+        transitions from: :title, to: :emphasis
+        transitions from: :subtitle, to: :emphasis
+        transitions from: :epigraph, to: :emphasis
+        transitions from: :cite, to: :emphasis
+        transitions from: :history, to: :emphasis
+        transitions from: :section, to: :emphasis
+        transitions from: :strong, to: :emphasis
+      end
+
+      event :end_emphasis do
+        transitions from: :emphasis, to: :v, guard: :in_v?
+        transitions from: :emphasis, to: :strong, guard: :in_strong?
+        transitions from: :emphasis, to: :p, guard: :in_p?
+        transitions from: :emphasis, to: :annotation, guard: :in_annotation?
+        transitions from: :emphasis, to: :title, guard: :in_title?
+        transitions from: :emphasis, to: :subtitle, guard: :in_subtitle?
+        transitions from: :emphasis, to: :epigraph, guard: :in_epigraph?
+        transitions from: :emphasis, to: :cite, guard: :in_cite?
+        transitions from: :emphasis, to: :history, guard: :in_history?
+        transitions from: :emphasis, to: :section, guard: :in_section?
+      end
+
       event :start_empty_line do
         transitions from: :annotation, to: :empty_line
         transitions from: :epigraph, to: :empty_line
         transitions from: :title, to: :empty_line
         transitions from: :subtitle, to: :empty_line
+        transitions from: :section, to: :empty_line
       end
 
       event :end_empty_line do
@@ -218,6 +271,7 @@ module Fb2
         transitions from: :empty_line, to: :epigraph, guard: :in_epigraph?
         transitions from: :empty_line, to: :title, guard: :in_title?
         transitions from: :empty_line, to: :subtitle, guard: :in_subtitle?
+        transitions from: :empty_line, to: :section, guard: :in_section?
       end
 
       event :start_poem do
@@ -291,11 +345,13 @@ module Fb2
       event :start_text_author do
         transitions from: :cite, to: :text_author
         transitions from: :epigraph, to: :text_author
+        transitions from: :poem, to: :text_author
       end
 
       event :end_text_author do
         transitions from: :text_author, to: :cite, guard: :in_cite?
         transitions from: :text_author, to: :epigraph, guard: :in_epigraph?
+        transitions from: :text_author, to: :poem, guard: :in_poem?
       end
 
       event :start_a do
@@ -521,12 +577,12 @@ module Fb2
 
       event :start_table do
         transitions from: :section, to: :table
-        transitions from: :paragraph, to: :table
+        transitions from: :p, to: :table
       end
 
       event :end_table do
         transitions from: :table, to: :section, guard: :in_section?
-        transitions from: :table, to: :paragraph, guard: :in_paragraph
+        transitions from: :table, to: :p, guard: :in_p?
       end
 
       event :start_tr do
@@ -587,6 +643,10 @@ module Fb2
         self.current_element = Annotation.new
       when 'p'
         self.current_element = Paragraph.new
+      when 'strong'
+        self.current_element = Strong.new
+      when 'emphasis'
+        self.current_element = Emphasis.new
       when 'empty_line'
         self.current_element = EmptyLine.new
       when 'poem'
@@ -699,7 +759,7 @@ module Fb2
       when 'coverpage'
         parent_element.coverpage = current_element
         stack.pop
-      when 'title', 'subtitle', 'epigraph', 'p', 'stanza', 'empty_line', 'poem', 'v', 'a', 'image', 'text_author', 'cite', 'style', 'section', 'table', 'th', 'td', 'tr'
+      when 'title', 'subtitle', 'epigraph', 'p', 'stanza', 'empty_line', 'poem', 'v', 'a', 'image', 'text_author', 'cite', 'style', 'section', 'table', 'th', 'td', 'tr', 'strong', 'emphasis'
         parent_element.text << current_element
         stack.pop
       when 'date'
